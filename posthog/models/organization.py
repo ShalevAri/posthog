@@ -155,9 +155,6 @@ class Organization(UUIDModel):
     domain_whitelist: ArrayField = ArrayField(
         models.CharField(max_length=256, blank=False), blank=True, default=list
     )  # DEPRECATED in favor of `OrganizationDomain` model; previously used to allow self-serve account creation based on social login (#5111)
-    available_features = ArrayField(
-        models.CharField(max_length=64, blank=False), blank=True, default=list
-    )  # DEPRECATED in favor of `available_product_features`
 
     objects: OrganizationManager = OrganizationManager()
 
@@ -239,7 +236,7 @@ def organization_about_to_be_created(sender, instance: Organization, raw, using,
 
 
 @receiver(models.signals.post_save, sender=Organization)
-def ensure_available_features_sync(sender, instance: Organization, **kwargs):
+def ensure_available_product_features_sync(sender, instance: Organization, **kwargs):
     updated_fields = kwargs.get("update_fields") or []
     if "available_product_features" in updated_fields:
         logger.info(
